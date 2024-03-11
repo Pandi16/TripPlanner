@@ -1,0 +1,78 @@
+[
+    {
+       "Bus_Name":"1",
+       "Bus_Stop": "Sikanderpur"
+    },
+    {
+        "Bus_Name": "1",
+        "Bus_Stop": "CRD chowk"
+    },
+    {
+        "Bus_Name": "1",
+        "Bus_Stop": "Kendriya Vihar"
+    },
+    {
+        "Bus_Name": "1",
+        "Bus_Stop": "Wazirabad"
+    },
+    {
+        "Bus_Name": "1",
+        "Bus_Stop": "Kanhaiya village"
+    },
+    {
+        "Bus_Name": "1",
+        "Bus_Stop": "millenium city centre"
+    },
+    {
+        "Bus_Name": "2",
+        "Bus_Stop": "Badarpur"
+    },
+    {
+        "Bus_Name": "2",
+        "Bus_Stop": "APPOLO Hospital"
+    },
+    {
+        "Bus_Name": "2",
+        "Bus_Stop": "Kalka More"
+    },
+    {
+        "Bus_Name": "2",
+        "Bus_Stop": "Ashram"
+    },
+    {
+        "Bus_Name": "2",
+        "Bus_Stop": "AIIMS"
+    },
+    {
+        "Bus_Name": "3",
+        "Bus_Stop": "Rajendra Place"
+    },
+    {
+        "Bus_Name": "3",
+        "Bus_Stop": "East Patel Nagar"
+    },
+    {
+        "Bus_Name": "3",
+        "Bus_Stop": "R-Blk New Rajendra Nagar"
+    },
+    {
+        "Bus_Name": "3",
+        "Bus_Stop": "Todapur"
+    },
+    {
+        "Bus_Name": "3",
+        "Bus_Stop": "Inderpuri"
+    },
+    {
+        "Bus_Name": "4",
+        "Bus_Stop": "Dwarka Mor"
+    },
+    {
+        "Bus_Name": "4",
+        "Bus_Stop": "Netaji Subhash Institute Of Technology"
+    },
+    {
+        "Bus_Name": "4",
+        "Bus_Stop": "Suraj Vihar"
+    }
+]

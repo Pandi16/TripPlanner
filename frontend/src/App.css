@@ -1,0 +1,56 @@
+/* Reset some default styles */
+body, h1, h2, h3, p, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  background-color: #4285f4;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+.nav {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.main-content {
+  padding: 20px;
+}
+
+.card {
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.footer {
+  background-color: #4285f4;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Add more styles as needed */
