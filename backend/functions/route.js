@@ -1,4 +1,4 @@
-
+const readline =require('readline');
 
 //QUEUE CLASS
 class PriorityQueue {
@@ -936,24 +936,45 @@ importlines();
 // console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
-//shortestRouteDjikstraCall
-start = performance.now();
-// Call your algorithm here
-console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("faridabad old", "rohini east").path);
-end = performance.now();
-executionTime = end - start;
-console.log(`Algorithm execution time: ${executionTime} milliseconds`);
+// //shortestRouteDjikstraCall
+// start = performance.now();
+// // Call your algorithm here
+// console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("faridabad old", "rohini east").path);
+// end = performance.now();
+// executionTime = end - start;
+// console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
-//shortestRouteDjikstraCall
-start = performance.now();
-// Call your algorithm here
-console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra("faridabad old", "rohini east"));
-end = performance.now();
-executionTime = end - start;
-console.log(`Algorithm execution time: ${executionTime} milliseconds`);
+// //shortestRouteDjikstraCall
+// start = performance.now();
+// // Call your algorithm here
+// console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra("faridabad old", "rohini east"));
+// end = performance.now();
+// executionTime = end - start;
+// console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
+
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+function getUserInput(question){
+  return new Promise((resolve)=>{
+    rl.question(question,(answer)=>{
+      resolve(answer.trim());
+    });
+  });
+}
+
+async function main(){
+  const source=await getUserInput('Enter the source place: ');
+  const destination=await getUserInput('Enter the destination place: ');
+  console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra(source, destination));
+  rl.close();
+}
+main();
 //console.log("Shortest Path using BFS "+"\n",g.shortestRouteBFS("aiims", "netaji subhash institute of technology"));
 //console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("aiims", "netaji subhash institute of technology").path);
 //console.log("\nShortest Path using bidirectionalSearch "+"\n",g.bidirectionalSearch("aiims", "netaji subhash institute of technology"));
