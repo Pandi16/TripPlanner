@@ -1,5 +1,17 @@
 const readline =require('readline');
 
+//Result class
+class all {
+  constructor() {
+    this.status = 204;
+    this.line1 = [];
+    this.line2 = [];
+    this.interchange = [];
+    this.lineEnds = [];
+    this.path;
+    this.time;
+  }
+}
 //QUEUE CLASS
 class PriorityQueue {
   constructor() {
@@ -132,17 +144,7 @@ class Graph {
     let lastStep = endNode;
 
     //Class to send as result
-    class all {
-      constructor() {
-        this.status = 204;
-        this.line1 = [];
-        this.line2 = [];
-        this.interchange = [];
-        this.lineEnds = [];
-        this.path;
-        this.time;
-      }
-    }
+    
     var result = new all();
     while (lastStep !== startNode) {
       if (this.getline(lastStep, backtrace[lastStep]) != this.getline(backtrace[lastStep], backtrace[backtrace[lastStep]]))
@@ -187,7 +189,7 @@ class Graph {
   }
   shortestRouteBidirectionalDijkstra(startNode, endNode) {
     console.log("--Directions from " + startNode + " to " + endNode + "--\n");
-  
+    var foundS =0, foundD =0 ;
     let times = {};
     let timesBackward = {};
     let backtrace = {};
@@ -202,6 +204,12 @@ class Graph {
     visitedFromGoal.set(endNode,null);
 
     this.nodes.forEach(node => {
+      if(node==startNode) {
+        foundS=1
+      }
+      if(node==endNode) {
+        foundD =1
+      }
       if (node !== startNode) {
         times[node] = Infinity;
       }
@@ -209,10 +217,17 @@ class Graph {
         timesBackward[node] = Infinity;
       }
     });
-  
+    if(foundS == 0 && foundD ==0)
+      return {'status' : 406}
+    else if(foundS == 0){
+      return {'status' : 4061}
+    }
+    else if(foundD == 0){
+      return {'status' : 4062}
+    }
     pqForward.enqueue([startNode, 0]);
     pqBackward.enqueue([endNode, 0]);
-  
+    var result=new all();
     while (!pqForward.isEmpty() && !pqBackward.isEmpty()) {
       let shortestStepForward = pqForward.dequeue();
       let shortestStepBackward = pqBackward.dequeue();
@@ -224,13 +239,56 @@ class Graph {
       
       if (intersectionNode) {
         // Combine the distances from both directions
-        console.log("Intersection Node:",intersectionNode);
-        console.log("currentNodeForward:",currentNodeForward);
-        console.log("currentNodeBackward:",currentNodeBackward)
-        console.log("visitedFromStart:",visitedFromStart);
-        console.log("visitedFromGoal:",visitedFromGoal);
+        // console.log("Intersection Node:",intersectionNode);
+        // console.log("currentNodeForward:",currentNodeForward);
+        // console.log("currentNodeBackward:",currentNodeBackward)
+        // console.log("visitedFromStart:",visitedFromStart);
+        // console.log("visitedFromGoal:",visitedFromGoal);
         let shortestPath = this.combinePathsBIDjik(visitedFromStart, visitedFromGoal,currentNodeForward,currentNodeBackward);
-        return { 'status': 200, 'path': shortestPath, 'time': times[intersectionNode]+timesBackward[intersectionNode] };
+        result.status=200;
+        result.path=shortestPath;
+        result.time=times[intersectionNode]+timesBackward[intersectionNode];
+        
+        let n=shortestPath.length;
+        
+        for(let i=n-1;i>=1;i--){
+          backtrace[shortestPath[i]]=shortestPath[i-1];
+        }
+        let lastStep=endNode;
+        while (lastStep !== startNode) {
+          if (this.getline(lastStep, backtrace[lastStep]) != this.getline(backtrace[lastStep], backtrace[backtrace[lastStep]]))
+            if (backtrace[lastStep] == startNode)
+              ;
+            //Yamuna Bank Handler
+            else if (backtrace[lastStep] == 'Yamuna Bank' && lastStep == 'Indraprastha' && backtrace[backtrace[lastStep]] == 'Laxmi Nagar') {
+              ;
+            }
+            else if (backtrace[lastStep] == 'Yamuna Bank' && lastStep == 'Laxmi Nagar' && backtrace[backtrace[lastStep]] == 'Indraprastha') {
+              ;
+            }
+            //Ashok Park Main Handler
+            else if (backtrace[lastStep] == 'Ashok Park Main' && lastStep == 'Punjabi Bagh' && backtrace[backtrace[lastStep]] == 'Satguru Ram Singh Marg') {
+              ;
+            }
+            else if (backtrace[lastStep] == 'Ashok Park Main' && lastStep == 'Satguru Ram Singh Marg' && backtrace[backtrace[lastStep]] == 'Punjabi Bagh') {
+              ;
+            }
+            else {
+              var line1Send = this.getline(backtrace[lastStep], backtrace[backtrace[lastStep]]);
+              var line2Send = this.getline(lastStep, backtrace[lastStep]);
+              var interchangeSend = backtrace[lastStep];
+              result.line1.unshift(line1Send);
+              result.line2.unshift(line2Send);
+              result.interchange.unshift(interchangeSend);
+            }
+          
+          lastStep = backtrace[lastStep]
+        }
+        if(result.interchange.length==0){
+          result.line1[0]=this.getline(result.path[0],result.path[1]);
+        }
+        result.lineEnds = getLast(result.path, result.interchange, result.line1, result.line2)
+        return result;
       }
       this.adjacencyList[currentNodeForward].forEach(neighbor => {
         let time = times[currentNodeForward] + neighbor.weight;
@@ -314,67 +372,7 @@ class Graph {
     // If no path is found
     return [];
   }
-  bidirectionalSearch(start, goal) {
-    const visitedFromStart = new Map();
-    const visitedFromGoal = new Map();
-    const queueStart = [start];
-    const queueGoal = [goal];
-
-    visitedFromStart.set(start, null);
-    visitedFromGoal.set(goal, null);
-
-    while (queueStart.length > 0 || queueGoal.length > 0) {
-      const currentStart = queueStart.shift();
-      const currentGoal = queueGoal.shift();
-
-      if (visitedFromStart.has(currentGoal)) {
-        // Found a meeting point
-        return this.getPathBI(visitedFromStart, visitedFromGoal, currentStart, currentGoal);
-      }
-
-      if (visitedFromGoal.has(currentStart)) {
-        // Found a meeting point
-        return this.getPathBI(visitedFromStart, visitedFromGoal, currentStart, currentGoal);
-      }
-
-      this.adjacencyList[currentStart].forEach(neighbor => {
-        if (!visitedFromStart.has(neighbor.node)) {
-          queueStart.push(neighbor.node);
-          visitedFromStart.set(neighbor.node, currentStart);
-        }
-      }); 
-
-      this.adjacencyList[currentGoal].forEach(neighbor => {
-        if (!visitedFromGoal.has(neighbor.node)) {
-          queueGoal.push(neighbor.node);
-          visitedFromGoal.set(neighbor.node, currentStart);
-        }
-      }); 
-      
-    }
-
-    return null; // No meeting point found
-  }
-
-  getPathBI(visitedFromStart, visitedFromGoal, start, goal) {
-    const path = [];
-
-    // Reconstruct path from start to meeting point
-    let current = start;
-    while (current !== null) {
-      path.unshift(current);
-      current = visitedFromStart.get(current);
-    }
-
-    // Reconstruct path from goal to meeting point (excluding the meeting point)
-    current = visitedFromGoal.get(goal);
-    while (current !== null) {
-      path.push(current);
-      current = visitedFromGoal.get(current);
-    }
-
-    return path;
-  }
+  
 
   printGraph(sta) {
     console.log("--Adjacency List Of " + sta + "--")
@@ -926,55 +924,55 @@ importlines();
 
 
 
+//shortestRouteBidirectionalDjikstraCall
+start = performance.now();
+// Call your algorithm here
+console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra("faridabad old", "khan market"));
+end = performance.now();
+executionTime = end - start;
+console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
-// //shortestRouteDjikstraCall
+
+
+// //shortestRouteBFS
 // var start = performance.now();
 // // Call your algorithm here
-// console.log("Shortest Path using BFS "+"\n",g.shortestRouteBFS("faridabad old", "rohini east"));
+// console.log("Shortest Path using BFS "+"\n",g.shortestRouteBFS("faridabad old", "khan market"));
 // var end = performance.now();
 // var executionTime = end - start;
 // console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
-// //shortestRouteDjikstraCall
-// start = performance.now();
-// // Call your algorithm here
-// console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("faridabad old", "rohini east").path);
-// end = performance.now();
-// executionTime = end - start;
-// console.log(`Algorithm execution time: ${executionTime} milliseconds`);
-
-
-// //shortestRouteDjikstraCall
-// start = performance.now();
-// // Call your algorithm here
-// console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra("faridabad old", "rohini east"));
-// end = performance.now();
-// executionTime = end - start;
-// console.log(`Algorithm execution time: ${executionTime} milliseconds`);
+//shortestRouteDjikstraCall
+start = performance.now();
+// Call your algorithm here
+console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("faridabad old", "khan market"));
+end = performance.now();
+executionTime = end - start;
+console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
 
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-function getUserInput(question){
-  return new Promise((resolve)=>{
-    rl.question(question,(answer)=>{
-      resolve(answer.trim());
-    });
-  });
-}
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
+// function getUserInput(question){
+//   return new Promise((resolve)=>{
+//     rl.question(question,(answer)=>{
+//       resolve(answer.trim());
+//     });
+//   });
+// }
 
-async function main(){
-  const source=await getUserInput('Enter the source place: ');
-  const destination=await getUserInput('Enter the destination place: ');
-  console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra(source, destination));
-  rl.close();
-}
-main();
+// async function main(){
+//   const source=await getUserInput('Enter the source place: ');
+//   const destination=await getUserInput('Enter the destination place: ');
+//   console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra(source, destination));
+//   rl.close();
+// }
+// main();
 //console.log("Shortest Path using BFS "+"\n",g.shortestRouteBFS("aiims", "netaji subhash institute of technology"));
 //console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("aiims", "netaji subhash institute of technology").path);
 //console.log("\nShortest Path using bidirectionalSearch "+"\n",g.bidirectionalSearch("aiims", "netaji subhash institute of technology"));

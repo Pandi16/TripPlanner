@@ -669,3 +669,65 @@ exports.get = functions.https.onRequest((req, res) => {
 //Orange
 //Aqua
 //Grey
+
+// bidirectionalSearch(start, goal) {
+//   const visitedFromStart = new Map();
+//   const visitedFromGoal = new Map();
+//   const queueStart = [start];
+//   const queueGoal = [goal];
+
+//   visitedFromStart.set(start, null);
+//   visitedFromGoal.set(goal, null);
+
+//   while (queueStart.length > 0 || queueGoal.length > 0) {
+//     const currentStart = queueStart.shift();
+//     const currentGoal = queueGoal.shift();
+
+//     if (visitedFromStart.has(currentGoal)) {
+//       // Found a meeting point
+//       return this.getPathBI(visitedFromStart, visitedFromGoal, currentStart, currentGoal);
+//     }
+
+//     if (visitedFromGoal.has(currentStart)) {
+//       // Found a meeting point
+//       return this.getPathBI(visitedFromStart, visitedFromGoal, currentStart, currentGoal);
+//     }
+
+//     this.adjacencyList[currentStart].forEach(neighbor => {
+//       if (!visitedFromStart.has(neighbor.node)) {
+//         queueStart.push(neighbor.node);
+//         visitedFromStart.set(neighbor.node, currentStart);
+//       }
+//     }); 
+
+//     this.adjacencyList[currentGoal].forEach(neighbor => {
+//       if (!visitedFromGoal.has(neighbor.node)) {
+//         queueGoal.push(neighbor.node);
+//         visitedFromGoal.set(neighbor.node, currentStart);
+//       }
+//     }); 
+    
+//   }
+
+//   return null; // No meeting point found
+// }
+
+// getPathBI(visitedFromStart, visitedFromGoal, start, goal) {
+//   const path = [];
+
+//   // Reconstruct path from start to meeting point
+//   let current = start;
+//   while (current !== null) {
+//     path.unshift(current);
+//     current = visitedFromStart.get(current);
+//   }
+
+//   // Reconstruct path from goal to meeting point (excluding the meeting point)
+//   current = visitedFromGoal.get(goal);
+//   while (current !== null) {
+//     path.push(current);
+//     current = visitedFromGoal.get(current);
+//   }
+
+//   return path;
+// }
