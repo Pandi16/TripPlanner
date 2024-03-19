@@ -8,6 +8,7 @@ class all {
     this.line2 = [];
     this.interchange = [];
     this.lineEnds = [];
+    this.transportation=[];
     this.path;
     this.time;
   }
@@ -177,14 +178,23 @@ class Graph {
     }
     result.path = path;
     result.time = times[endNode];
-
+    for(let i=0;i<result.path.length-1;i++){
+      for(let x of this.adjacencyList[result.path[i]]){
+        if(x.node===result.path[i+1]){
+          result.transportation.push(x.via);
+          break;
+        }
+      }
+    }
     if (result.interchange.length == 0)
       result.line1[0] = this.getline(result.path[0], result.path[1]);
     result.lineEnds = getLast(result.path, result.interchange, result.line1, result.line2)
     console.log(result.time)
 
     if(path.length != 1)
-      result.status = 200
+      result.status = 200;
+
+
     return result;
   }
   shortestRouteBidirectionalDijkstra(startNode, endNode) {
@@ -254,6 +264,7 @@ class Graph {
         for(let i=n-1;i>=1;i--){
           backtrace[shortestPath[i]]=shortestPath[i-1];
         }
+
         let lastStep=endNode;
         while (lastStep !== startNode) {
           if (this.getline(lastStep, backtrace[lastStep]) != this.getline(backtrace[lastStep], backtrace[backtrace[lastStep]]))
@@ -287,6 +298,14 @@ class Graph {
         if(result.interchange.length==0){
           result.line1[0]=this.getline(result.path[0],result.path[1]);
         }
+        for(let i=0;i<result.path.length-1;i++){
+          for(let x of this.adjacencyList[result.path[i]]){
+            if(x.node===result.path[i+1]){
+              result.transportation.push(x.via);
+              break;
+            }
+          }
+        }
         result.lineEnds = getLast(result.path, result.interchange, result.line1, result.line2)
         return result;
       }
@@ -299,7 +318,7 @@ class Graph {
           pqForward.enqueue([neighbor.node, time]);
         }
       });
-  
+
       this.adjacencyList[currentNodeBackward].forEach(neighbor => {
         let time = timesBackward[currentNodeBackward] + neighbor.weight;
   
@@ -315,7 +334,9 @@ class Graph {
   
     return { 'status': 204 }; // No path found
   }
-  
+  findTransport(place1,place2){
+
+  }
   findIntersection(visitedFromStart, visitedFromGoal,currentNodeForward,currentNodeBackward) {
     if (visitedFromStart.has(currentNodeBackward)) {
       // Found a meeting point
@@ -331,7 +352,6 @@ class Graph {
   
   combinePathsBIDjik(visitedFromStart, visitedFromGoal, intersectionNode) {
     const path = [];
-
     // Reconstruct path from start to meeting point
     let current=intersectionNode;
     while (current !== null) {
@@ -924,13 +944,13 @@ importlines();
 
 
 
-//shortestRouteBidirectionalDjikstraCall
-start = performance.now();
-// Call your algorithm here
-console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra("faridabad old", "khan market"));
-end = performance.now();
-executionTime = end - start;
-console.log(`Algorithm execution time: ${executionTime} milliseconds`);
+// //shortestRouteBidirectionalDjikstraCall
+// start = performance.now();
+// // Call your algorithm here
+// console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra("faridabad old", "khan market"));
+// end = performance.now();
+// executionTime = end - start;
+// console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
 
@@ -943,36 +963,106 @@ console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 // console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
-//shortestRouteDjikstraCall
-start = performance.now();
-// Call your algorithm here
-console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("faridabad old", "khan market"));
-end = performance.now();
-executionTime = end - start;
-console.log(`Algorithm execution time: ${executionTime} milliseconds`);
+// //shortestRouteDjikstraCall
+// start = performance.now();
+// // Call your algorithm here
+// console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("rohini east", "wazirabad"));
+// end = performance.now();
+// executionTime = end - start;
+// console.log(`Algorithm execution time: ${executionTime} milliseconds`);
 
 
+console.log("\n----------------------------------------");
+console.log("|           Trip Planner                |");
+console.log("----------------------------------------");
 
 
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
-// function getUserInput(question){
-//   return new Promise((resolve)=>{
-//     rl.question(question,(answer)=>{
-//       resolve(answer.trim());
-//     });
-//   });
-// }
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+function getUserInput(question){
+  return new Promise((resolve)=>{
+    rl.question(question,(answer)=>{
+      resolve(answer.trim());
+    });
+  });
+}
 
-// async function main(){
-//   const source=await getUserInput('Enter the source place: ');
-//   const destination=await getUserInput('Enter the destination place: ');
-//   console.log("\nShortest Path using BidirectionalDjikstra "+"\n",g.shortestRouteBidirectionalDijkstra(source, destination));
-//   rl.close();
-// }
-// main();
+function displayDirections(directions){
+  for(let i=0;i<directions.path.length-1;i++){
+    const currentPlace=directions.path[i];
+    let nextPlace=undefined;
+    let sta=[];
+    sta.push(currentPlace);
+    for(let j=i+1;j<directions.path.length;j++){
+      nextPlace=directions.path[j];
+      interchangeIndex=directions.interchange.indexOf(nextPlace);
+      i=j-1;
+      if(interchangeIndex!==-1){
+        nextPlace=directions.interchange[interchangeIndex];
+        sta.push(nextPlace);
+        
+        break;
+      }
+      sta.push(nextPlace);
+    }
+    
+    //const transport=directions.transportation[i];
+    //let instruction=`${currentPlace} -> ${nextPlace} : ${transport}`;
+    let instruction=`${currentPlace} -> ${nextPlace}`;
+    console.log(instruction);
+    for(let station of sta){
+      console.log(`   | ${station}`);
+    }
+    if(interchangeIndex!==-1){
+      const line1Change=directions.line1[interchangeIndex];
+      const line2Change=directions.line2[interchangeIndex];
+      let lineChange=`Change from ${line1Change} to ${line2Change} line`;
+      console.log(lineChange);
+    }
+    
+    
+  }
+}
+async function main(){
+  const source=await getUserInput('\nEnter the Source place: ');
+  const destination=await getUserInput('Enter the Destination place: ');
+  
+  console.log();
+  let dots=0;
+  const maxDots=3;
+
+  const loadingInterval = setInterval(() => {
+      let dotsString='.'.repeat(dots);
+      
+      process.stdout.write(`\rFetching Details${dotsString}`);
+      if(dots>=maxDots){
+        dots=0;  
+      }else{
+        dots++;
+      }
+      
+  }, 300);
+
+  // Simulate some asynchronous operation
+  setTimeout(() => {
+      clearInterval(loadingInterval);
+      process.stdout.write(`\rFetched Successfully`);
+      console.log(`\nDirections from ${source} to ${destination} :- `);
+      
+      // Printing results
+      let directions=g.shortestRouteDjikstra(source,destination);
+      displayDirections(directions);
+  }, 1100); // Change the timeout to simulate longer loading times
+
+  
+  
+  rl.close();
+}
+main();
+
+
 //console.log("Shortest Path using BFS "+"\n",g.shortestRouteBFS("aiims", "netaji subhash institute of technology"));
 //console.log("\nShortest Path using Djikstra "+"\n",g.shortestRouteDjikstra("aiims", "netaji subhash institute of technology").path);
 //console.log("\nShortest Path using bidirectionalSearch "+"\n",g.bidirectionalSearch("aiims", "netaji subhash institute of technology"));
